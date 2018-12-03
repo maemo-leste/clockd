@@ -1,3 +1,9 @@
+/**
+ * @brief clockd helper (suidroot) program to set system time
+ * @file  rclockd.c
+ * @copyright GNU GPLv2 or later
+ */
+
 #include <sys/ioctl.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -31,6 +37,9 @@ set_uid(__uid_t uid, const char *f)
   return uid;
 }
 
+/**
+ * See man 8 hwclock
+ */
 static int
 set_time(const char *s)
 {
@@ -44,6 +53,7 @@ set_time(const char *s)
 
   if (settimeofday(&tv, NULL))
   {
+    /* See man 4 rtc */
     time_t timer = sec;
     int fd = open("/dev/rtc", O_RDWR);
 

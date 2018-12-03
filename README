@@ -1,9 +1,40 @@
-Purpose
-=======
-Provides centralized place for handling time.
+                  Clock Daemon and libtime
+                  ========================
 
-Description
-===========
-* Provides service and API for requesting, changing and notifying time
-  and timezone changes.
-* Provides interface for monitoring network time notifications.
+ * Provide service and API for requesting, changing and notifying time
+   and timezone changes.
+
+ * Provide interface for monitoring network time notifications.
+
+Structure
+=========
+ The following ASCII art describes the architecture.
+
+     +-----+  +-----+  +-----+
+     |app 1|  |app 2|  |app 3| applications
+     -------------------------  libtime.h
+            | libtime |
+            +---------+
+              ^ ^ ^
+              | | |
+        D-Bus | | |
+              | | |
+              v v v
+            +------+  D-Bus +---+
+     daemon |clockd|<-------|csd|
+            +------+        +---+
+                |                 userland
+     -------------------------------------
+                |                 kernel
+          - systemtime
+          - RTC (real time clock)
+          - timezone
+
+Components
+==========
+ clockd
+  - The Daemon
+  - Provides centralized place for handling time
+
+ libtime
+  - API library

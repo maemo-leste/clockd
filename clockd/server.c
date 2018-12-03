@@ -1,3 +1,15 @@
+/**
+ * @brief clockd 'server'
+ *
+ * @file  server.c
+ *
+ * This is D-Bus server for clockd that communicates with clock/time -aware
+ * applications. It also listens for CSD NET_TIME_CHANGE signal and reacts to
+ * it accordingly.
+ *
+ * @copyright GNU GPLv2 or later
+ */
+
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/times.h>
@@ -15,9 +27,6 @@
 
 #include <glib.h>
 #include <dbus/dbus-glib-lowlevel.h>
-
-//#include <libosso.h>
-
 
 #include "codec.h"
 #include "logging.h"
@@ -87,6 +96,14 @@ static const struct server_callback server_callbacks[] =
   {NULL, NULL}
 };
 
+/**
+ * Create D-Bus method call response message
+ *
+ * @param msg   request message
+ * @param type  vararg type/value attributes
+ *
+ * @return      NULL if fails, pointer to DBusMessage if OK
+ */
 static DBusMessage *
 server_new_rsp(DBusMessage *msg, int type, ...)
 {
@@ -102,6 +119,11 @@ server_new_rsp(DBusMessage *msg, int type, ...)
   return rsp;
 }
 
+/**
+ * Send "change" indication to all interested parties (via libosso).
+ * @param t  Current time
+ * @return   0 if OK, -1 if error
+ */
 static int
 server_send_time_change_indication(time_t t)
 {
@@ -161,6 +183,10 @@ server_send_time_change_indication(time_t t)
   return rv;
 }
 
+/**
+ * Save current config to /home/user/.clockd.conf
+ * @return  0 if OK, -1 if error
+ */
 static int save_conf()
 {
   FILE *fp;
@@ -210,6 +236,17 @@ static int save_conf()
   return rv;
 }
 
+/**
+ * Handle D-Bus net_time_change signal from CSD. If network autosync is
+ * enabled, set system/RTC time and sends time change indication with
+ * libosso; otherwise just store the data (that can be activated with
+ * activate_net_time method later)
+ *
+ * @param msg  signal message
+ *
+ * @return     -1 if failed to update time (e.g. NITZ does not supported by
+ *             carrier), otherwise 0
+ */
 static int
 handle_csd_net_time_change(DBusMessage *msg)
 {
@@ -376,6 +413,13 @@ out:
   return rv;
 }
 
+/**
+ * Handle D-Bus activate_net_time method. Sets system/RTC time and sends time
+ * change indication with libosso.
+ *
+ * @param msg  request message
+ * @return     NULL if fails, pointer to response DBusMessage if OK
+ */
 static DBusMessage *
 server_activate_net_time_cb(DBusMessage *msg)
 {
@@ -387,6 +431,11 @@ server_activate_net_time_cb(DBusMessage *msg)
   return server_new_rsp(msg, DBUS_TYPE_BOOLEAN, &success, DBUS_TYPE_INVALID);
 }
 
+/**
+ * Handle D-Bus is_net_time_changed method
+ * @param msg  request message
+ * @return     NULL if fails, pointer to response DBusMessage if OK
+ */
 static DBusMessage *
 server_is_net_time_changed_cb(DBusMessage *msg)
 {
@@ -410,6 +459,13 @@ server_is_net_time_changed_cb(DBusMessage *msg)
                         DBUS_TYPE_INVALID);
 }
 
+/**
+ * Handle D-Bus set_time method. Sets system/RTC time and sends time change
+ * indication with libosso.
+ *
+ * @param msg  request message
+ * @return     NULL if fails, pointer to response DBusMessage if OK
+ */
 static DBusMessage *
 server_set_time_cb(DBusMessage *msg)
 {
@@ -445,6 +501,13 @@ server_set_time_cb(DBusMessage *msg)
   return rsp;
 }
 
+/**
+ * Handle D-Bus set_tz method. Sets the time zone and sends time change
+ * indication. Saves config to /home/user/.clockd.conf
+ *
+ * @param msg  request message
+ * @return     NULL if fails, pointer to response DBusMessage if OK
+ */
 static DBusMessage *
 server_set_tz_cb(DBusMessage *msg)
 {
@@ -503,6 +566,13 @@ server_set_tz_cb(DBusMessage *msg)
   return rsp;
 }
 
+/**
+ * Handle D-Bus set_autosync method. Set autosync on/off and sends time
+ * change indication with libosso. Saves config to /home/user/.clockd.conf
+ *
+ * @param msg  request message
+ * @return     NULL if fails, pointer to response DBusMessage if OK
+ */
 static DBusMessage *
 server_set_autosync_cb(DBusMessage *msg)
 {
@@ -547,6 +617,14 @@ server_set_autosync_cb(DBusMessage *msg)
   return rsp;
 }
 
+/**
+ * Handle D-Bus get_time_fmt method. Sets the time format locally and sends
+ * time change indication with libosso. Saves config to
+ * /home/user/.clockd.conf
+ *
+ * @param msg  request message
+ * @return     NULL if fails, pointer to response DBusMessage if OK
+ */
 static DBusMessage *
 server_set_time_format_cb(DBusMessage *msg)
 {
@@ -589,6 +667,11 @@ server_set_time_format_cb(DBusMessage *msg)
   return rsp;
 }
 
+/**
+ * Handle D-Bus get_time_fmt method
+ * @param msg  request message
+ * @return     NULL if fails, pointer to response DBusMessage if OK
+ */
 static DBusMessage *
 server_get_time_format_cb(DBusMessage *msg)
 {
@@ -597,6 +680,11 @@ server_get_time_format_cb(DBusMessage *msg)
   return server_new_rsp(msg, DBUS_TYPE_STRING, &s, DBUS_TYPE_INVALID);
 }
 
+/**
+ * Handle D-Bus get_default_tz method
+ * @param msg  request message
+ * @return     NULL if fails, pointer to response DBusMessage if OK
+ */
 static DBusMessage *
 server_get_default_tz_cb(DBusMessage *msg)
 {
@@ -605,6 +693,11 @@ server_get_default_tz_cb(DBusMessage *msg)
   return server_new_rsp(msg, DBUS_TYPE_STRING, &s, DBUS_TYPE_INVALID);
 }
 
+/**
+ * Handle D-Bus get_tz method.
+ * @param msg  request message
+ * @return     NULL if fails, pointer to response DBusMessage if OK
+ */
 static DBusMessage *
 server_get_tz_cb(DBusMessage *msg)
 {
@@ -613,6 +706,11 @@ server_get_tz_cb(DBusMessage *msg)
   return server_new_rsp(msg, DBUS_TYPE_STRING, &s, DBUS_TYPE_INVALID);
 }
 
+/**
+ * Handle D-Bus get_autosync method
+ * @param msg  request message
+ * @return     NULL if fails, pointer to response DBusMessage if OK
+ */
 static DBusMessage *
 server_get_autosync_cb(DBusMessage *msg)
 {
@@ -621,6 +719,11 @@ server_get_autosync_cb(DBusMessage *msg)
   return server_new_rsp(msg, DBUS_TYPE_BOOLEAN, &as, DBUS_TYPE_INVALID);
 }
 
+/**
+ * Handle D-Bus have_opertime method
+ * @param msg  request message
+ * @return     NULL if fails, pointer to response DBusMessage if OK
+ */
 static DBusMessage *
 server_have_opertime_cb(DBusMessage *msg)
 {
@@ -629,6 +732,11 @@ server_have_opertime_cb(DBusMessage *msg)
   return server_new_rsp(msg, DBUS_TYPE_BOOLEAN, &nt, DBUS_TYPE_INVALID);
 }
 
+/**
+ * Handle D-Bus get_time method
+ * @param msg  request message
+ * @return     NULL if fails, pointer to response DBusMessage if OK
+ */
 static DBusMessage *
 server_get_time_cb(DBusMessage *msg)
 {
@@ -637,6 +745,15 @@ server_get_time_cb(DBusMessage *msg)
   return server_new_rsp(msg, DBUS_TYPE_INT32, &t, DBUS_TYPE_INVALID);
 }
 
+/**
+ * Handle requests (methods or signals) coming via D-Bus
+ *
+ * @param conn       D-Bus connection
+ * @param msg        D-Bus message
+ * @param user_data  User data (not used)
+ *
+ * @return  DBusHandlerResult
+ */
 static DBusHandlerResult
 server_filter(DBusConnection *conn, DBusMessage *msg, void *user_data)
 {
@@ -746,6 +863,11 @@ err:
   return -1;
 }
 
+/**
+ * Set system and RTC time using suidroot rclockd helper
+ * @param t  Current time
+ * @return   0 if OK, -1 if error
+ */
 static int
 server_set_time(time_t tick)
 {
@@ -784,6 +906,9 @@ server_set_operator_tz_cb(const char *tz)
     DO_LOG(LOG_ERR, "server_set_operator_tz_cb(): tz = <null> !!!");
 }
 
+/**
+ * Check DST change and send time change indication when DST changes.
+ */
 static gboolean
 handle_alarm()
 {
@@ -877,6 +1002,9 @@ set_network_time(bool save_config)
   return rv;
 }
 
+/**
+ * Deinitialize D-Bus server
+ */
 void
 server_quit(void)
 {
@@ -963,6 +1091,10 @@ server_init_default_tz()
   }
 }
 
+/**
+ * Read /home/user/.clockd.conf contents
+ * @return  0 if OK, -1 if error
+ */
 static int
 read_conf()
 {
@@ -1056,6 +1188,19 @@ get_autosync(void)
   return autosync;
 }
 
+/**
+ * Init D-Bus server
+ *
+ * The following is set up:
+ *
+ * - settings from environment (/etc/clockd/clockd-settings.default)
+ * - settings from configuration file (/home/user/.clockd.conf)
+ * - D-Bus connections
+ * - libosso init
+ * - timezone from /etc/localtime or /home/user/.clockd.conf
+ *
+ * @return  0 if OK, -1 if error
+ */
 int
 server_init()
 {
