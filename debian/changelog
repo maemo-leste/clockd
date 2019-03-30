@@ -1,3 +1,9 @@
+clockd (0.0.43) unstable; urgency=medium
+
+  * Port to debhelper 10
+
+ -- Ivan J. <parazyd@dyne.org>  Sat, 30 Mar 2019 12:51:22 +0100
+
 clockd (0.0.42) unstable; urgency=medium
 
   * libtime: change some functions return value to be consistent with API docs

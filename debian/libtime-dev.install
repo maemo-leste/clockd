@@ -1,4 +1,4 @@
-usr/lib/libtime.so
-usr/lib/libtime.a
+usr/lib/*/libtime.so
+usr/lib/*/libtime.a
 usr/include/clockd/*.h
-usr/lib/pkgconfig/*.pc
+usr/lib/*/pkgconfig/*.pc

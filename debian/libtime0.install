@@ -1,1 +1,1 @@
-usr/lib/libtime.so.*
+usr/lib/*/libtime.so.*

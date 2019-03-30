@@ -2,8 +2,7 @@ Source: clockd
 Section: misc
 Priority: optional
 Maintainer: Ivaylo Dimitrov <ivo.g.dimitrov.75@gmail.com>
-Build-Depends: debhelper (>= 5),
- cdbs,
+Build-Depends: debhelper (>= 10),
  pkg-config,
  libdbus-1-dev (>= 1.0),
  libtool,
@@ -29,14 +28,6 @@ Architecture: any
 Depends: ${shlibs:Depends}
 Description: API for clockd service
  This package contains C API for using clockd services.
-
-Package: clockd-dbg
-Section: libdevel
-Priority: extra
-Architecture: any
-Depends: libtime0 (= ${binary:Version}), clockd (= ${binary:Version})
-Description: Debug symbols for clockd and libtime0
- This package provides debug symbols for the clockd API and daemon.
 
 Package: libtime-dev
 Section: libdevel

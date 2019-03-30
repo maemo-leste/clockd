@@ -1,34 +1,4 @@
 #!/usr/bin/make -f
 
-include /usr/share/cdbs/1/rules/debhelper.mk
-include /usr/share/cdbs/1/class/autotools.mk
-
-CFLAGS += -Wall -g -Werror
-PACKAGENAME = clockd
-
-ifneq (,$(findstring noopt,$(DEB_BUILD_OPTIONS)))
-	CFLAGS += -O0
-else
-	CFLAGS += -O2
-endif
-ifeq (,$(findstring nostrip,$(DEB_BUILD_OPTIONS)))
-	INSTALL_PROGRAM += -s
-endif
-
-ifneq (,$(findstring thumb,$(DEB_BUILD_OPTIONS)))
-        CFLAGS += -mthumb
-endif
-
-ifneq (,$(findstring debug,$(DEB_BUILD_OPTIONS)))
-	conf_opt += --enable-debug
-endif
-
-DEB_DH_INSTALLDOCS_ARGS=--no-act
-DEB_INSTALL_DOCS_ALL=
-DEB_DH_INSTALL_SOURCEDIR=debian/tmp
-
-makebuilddir::
-	AUTOGEN_SUBDIR_MODE=1 NOCONFIGURE=yes ./autogen.sh
-
-binary-install/clockd::
-	dh_installinit --name=clock-daemon
+%:
+	dh $@ --parallel
