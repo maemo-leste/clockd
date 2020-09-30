@@ -1,0 +1,2 @@
+DAEMON=/usr/bin/clockd
+DAEMON_OPTS=""

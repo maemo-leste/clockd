@@ -2,3 +2,8 @@
 
 %:
 	dh $@
+
+override_dh_install:
+	dh_install
+	mkdir -p $(CURDIR)/debian/clockd/etc/conf.d
+	cp -f clockd.confd $(CURDIR)/debian/clockd/etc/conf.d
