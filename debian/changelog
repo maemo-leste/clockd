@@ -1,3 +1,9 @@
+clockd (0.0.45) unstable; urgency=medium
+
+  * make rclockd actually work
+
+ -- Ivaylo Dimitrov <ivo.g.dimitrov.75@gmail.com>  Mon, 05 Oct 2020 15:44:11 +0300
+
 clockd (0.0.44) unstable; urgency=medium
 
   * Port initscript to OpenRC.
