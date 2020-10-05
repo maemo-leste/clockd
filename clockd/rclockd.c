@@ -51,7 +51,7 @@ set_time(const char *s)
   tv.tv_sec = sec;
   tv.tv_usec = 0;
 
-  if (settimeofday(&tv, NULL))
+  if (settimeofday(&tv, NULL) == 0)
   {
     /* See man 4 rtc */
     time_t timer = sec;
@@ -102,11 +102,11 @@ set_tz(const char *s)
 
   DO_LOG(LOG_DEBUG, "set_tz(), path=%s", path);
 
-  if (stat(path, &stat_buf))
+  if (stat(path, &stat_buf) == 0)
   {
     rename("/etc/localtime", "/etc/localtime.save");
 
-    if (!symlink(path, "/etc/localtime"))
+    if (symlink(path, "/etc/localtime") == 0)
     {
       rv = 0;
       DO_LOG(LOG_DEBUG, "timezone changed to '%s'", path);
