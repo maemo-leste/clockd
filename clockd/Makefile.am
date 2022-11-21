@@ -23,8 +23,8 @@ libtime_a_SOURCES = libtime.c codec.c
 libtime_a_CFLAGS = $(DBUS_CFLAGS) -DMESTR="\"$(PACKAGE_NAME):\""
 
 clockd_SOURCES = sighnd.c clockd.c mainloop.c internal_time_utils.c mcc_tz_utils.c logging.c server.c
-clockd_CFLAGS = $(DBUS_CFLAGS) $(GLIB_CFLAGS) $(CITYINFO_CFLAGS) $(DBUSGLIB_CFLAGS) -DMESTR="\"$(PACKAGE_NAME):\""
-clockd_LDADD = $(DBUS_LIBS) $(GLIB_LIBS) $(CITYINFO_LIBS) $(DBUSGLIB_LIBS) libtime.a
+clockd_CFLAGS = $(DBUS_CFLAGS) $(GLIB_CFLAGS) $(CITYINFO_CFLAGS) $(DBUSGLIB_CFLAGS) $(GCONF_CFLAGS) -DMESTR="\"$(PACKAGE_NAME):\""
+clockd_LDADD = $(DBUS_LIBS) $(GLIB_LIBS) $(CITYINFO_LIBS) $(DBUSGLIB_LIBS) $(GCONF_LIBS) libtime.a
 
 rclockd_SOURCES = rclockd.c
 rclockd_CFLAGS = -DMESTR="\"$(PACKAGE_NAME):\""
