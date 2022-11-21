@@ -10,7 +10,8 @@ Build-Depends: debhelper (>= 10),
  automake,
  libglib2.0-dev,
  libdbus-glib-1-dev,
- libcityinfo-dev
+ libcityinfo-dev,
+ libgconf2-dev
 Standards-Version: 3.7.2
 
 Package: clockd
