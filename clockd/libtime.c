@@ -203,6 +203,7 @@ client_get_rsp(DBusMessage *msg)
       fprintf(stderr, "->\t%s: %s\n", error.name, error.message);
     }
 
+    dbus_error_free(&error);
     time_dbus_connection_close();
   }
   while (i--);
