@@ -1,8 +1,14 @@
+clockd (0.0.47) unstable; urgency=medium
+
+  * libtime: Do not abort if clockd is not running
+
+ -- Ivaylo Dimitrov <ivo.g.dimitrov.75@gmail.com>  Fri, 04 Oct 2024 08:01:26 +0300
+
 clockd (0.0.46) unstable; urgency=medium
 
   * Add gconf build dependencies
 
- -- Blagovest Petrov <blagovest@petrovs.info> Sun, 20 Nov 2020 23:58:47 +0300
+ -- Blagovest Petrov <blagovest@petrovs.info>  Sun, 20 Nov 2020 23:58:47 +0300
 
 clockd (0.0.45) unstable; urgency=medium
 
