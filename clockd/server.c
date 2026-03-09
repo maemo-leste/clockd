@@ -24,6 +24,7 @@
 #include <time.h>
 #include <ctype.h>
 #include <stdbool.h>
+#include <inttypes.h>
 
 #include <glib.h>
 #include <dbus/dbus-glib-lowlevel.h>
@@ -348,7 +349,7 @@ handle_csd_net_time_change(DBusMessage *msg)
 
   log_tm("NEW", &tm_net);
 
-  DO_LOG(LOG_DEBUG, "timeoff: %+ld", time_utc - now);
+  DO_LOG(LOG_DEBUG, "timeoff: %+jd", (intmax_t)(time_utc - now));
   DO_LOG(LOG_DEBUG, "gmtoff: %ld -> %ld", tm_old.tm_gmtoff, tm_net.tm_gmtoff);
 
   net_time_changed_time = time_utc;

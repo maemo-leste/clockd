@@ -14,6 +14,7 @@
 #include <string.h>
 #include <ctype.h>
 #include <stdbool.h>
+#include <inttypes.h>
 
 #include "logging.h"
 #include "internal_time_utils.h"
@@ -106,7 +107,7 @@ internal_set_time(time_t t)
   int st;
   char buf[512];
 
-  snprintf(buf, 512u, "/usr/bin/rclockd clockd %lu", t);
+  snprintf(buf, 512u, "/usr/bin/rclockd clockd %ju", (intmax_t)t);
   st = system(buf);
 
   if (st)
@@ -121,8 +122,8 @@ internal_set_time(time_t t)
     if (abs(now - t) > 2)
     {
       DO_LOG(LOG_ERR,
-             "internal_set_time(), difference with intended and actual time is %ld seconds!",
-             (long)t - now);
+             "internal_set_time(), difference with intended and actual time is %jd seconds!",
+             (intmax_t)(t - now));
     }
   }
   return st;
