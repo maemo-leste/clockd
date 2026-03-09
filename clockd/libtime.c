@@ -222,10 +222,10 @@ static int
 client_set_time(time_t tick)
 {
   DBusMessage *msg;
-  dbus_int32_t db_time = tick;
+  dbus_int64_t db_time = tick;
   dbus_bool_t result = FALSE;
 
-  msg = client_new_req(CLOCKD_SET_TIME, DBUS_TYPE_INT32, &db_time,
+  msg = client_new_req(CLOCKD_SET_TIME, DBUS_TYPE_INT64, &db_time,
                        DBUS_TYPE_INVALID);
   if (msg)
   {
@@ -397,14 +397,14 @@ client_get_net_time(time_t *t, char *s, size_t max)
   if (req)
   {
     DBusMessage *rsp = client_get_rsp(req);
-    dbus_int32_t tick;
+    dbus_int64_t tick;
     char *tz = NULL;
 
     if (rsp)
     {
       DBusError error = DBUS_ERROR_INIT;
       if (dbus_message_get_args(rsp, &error,
-                                DBUS_TYPE_INT32, &tick,
+                                DBUS_TYPE_INT64, &tick,
                                 DBUS_TYPE_STRING, &tz,
                                 DBUS_TYPE_INVALID) && tick)
       {

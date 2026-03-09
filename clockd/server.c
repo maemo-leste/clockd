@@ -128,8 +128,7 @@ static int
 server_send_time_change_indication(time_t t)
 {
   DBusMessage *msg;
-  dbus_int64_t dbus64_tick = t;
-  dbus_int64_t dbus32_tick = t;
+  dbus_int64_t dbus_tick = t;
   int rv = -1;
 
   was_dst = internal_get_dst(t);
@@ -139,7 +138,7 @@ server_send_time_change_indication(time_t t)
   msg = dbus_message_new_signal("/com/nokia/time", "com.nokia.time", "changed");
   if (msg)
   {
-    if (dbus_message_append_args(msg, DBUS_TYPE_INT64, &dbus64_tick,
+    if (dbus_message_append_args(msg, DBUS_TYPE_INT64, &dbus_tick,
                                  DBUS_TYPE_INVALID))
     {
       if (dbus_connection_send(dbus_connection, msg, 0))
@@ -161,7 +160,7 @@ server_send_time_change_indication(time_t t)
 
   if (msg)
   {
-    if (dbus_message_append_args(msg, DBUS_TYPE_INT32, &dbus32_tick,
+    if (dbus_message_append_args(msg, DBUS_TYPE_INT64, &dbus_tick,
                                  DBUS_TYPE_INVALID))
     {
       if (dbus_connection_send(dbus_connection, msg, 0))
@@ -439,7 +438,7 @@ server_activate_net_time_cb(DBusMessage *msg)
 static DBusMessage *
 server_is_net_time_changed_cb(DBusMessage *msg)
 {
-  dbus_int32_t net_time;
+  dbus_int64_t net_time;
   char *tz = saved_server_opertime_tz;
 
   if (net_time_changed_time)
@@ -455,7 +454,7 @@ server_is_net_time_changed_cb(DBusMessage *msg)
     tz = "";
   }
 
-  return server_new_rsp(msg, DBUS_TYPE_INT32, &net_time, DBUS_TYPE_STRING, &tz,
+  return server_new_rsp(msg, DBUS_TYPE_INT64, &net_time, DBUS_TYPE_STRING, &tz,
                         DBUS_TYPE_INVALID);
 }
 
@@ -471,10 +470,10 @@ server_set_time_cb(DBusMessage *msg)
 {
   DBusMessage *rsp;
   DBusError error = DBUS_ERROR_INIT;
-  dbus_int32_t dbus_time = 0;
+  dbus_int64_t dbus_time = 0;
   dbus_bool_t success = FALSE;
 
-  if (dbus_message_get_args(msg, &error, DBUS_TYPE_INT32, &dbus_time,
+  if (dbus_message_get_args(msg, &error, DBUS_TYPE_INT64, &dbus_time,
                             DBUS_TYPE_INVALID))
   {
     DO_LOG(LOG_DEBUG, "Setting time to %lu", (unsigned long)dbus_time);
@@ -740,9 +739,9 @@ server_have_opertime_cb(DBusMessage *msg)
 static DBusMessage *
 server_get_time_cb(DBusMessage *msg)
 {
-  dbus_int32_t t = internal_get_time();
+  dbus_int64_t t = internal_get_time();
 
-  return server_new_rsp(msg, DBUS_TYPE_INT32, &t, DBUS_TYPE_INVALID);
+  return server_new_rsp(msg, DBUS_TYPE_INT64, &t, DBUS_TYPE_INVALID);
 }
 
 /**
